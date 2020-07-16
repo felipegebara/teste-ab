@@ -1,0 +1,40 @@
+
+
+import pandas as pd
+import numpy as np
+
+#import data
+data=pd.read_csv('C:/Users/fgeba/Downloads/mkt.csv',sep=",")
+
+
+#transformacoes dummy
+data = pd.get_dummies(data, columns=['zip_code'], drop_first=True)
+data = pd.get_dummies(data, columns=['channel'], drop_first=True)
+data = pd.get_dummies(data, columns=['offer'], drop_first=True)
+
+bin=pd.DataFrame()
+
+#divisao supondo q foi feito um teste ab em 50% da base
+new_data = data[:32000]
+
+
+#aplica o best binnig
+import scorecardpy as sc
+import math
+dt_s = sc.var_filter(new_data, y="conversion")
+
+y=['conversion']
+
+bins = sc.woebin(new_data, y="conversion")
+
+X1 = sc.woebin_ply(new_data, bins)
+
+
+for key1 in bins.keys():
+
+    bin1=bins[key1]
+    bin=pd.concat ([ bin ,  bin1 ])
+
+
+bin.to_csv('baset.csv',sep=";")
+
